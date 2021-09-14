@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import * as XLSX from "xlsx";
+import { CSVLink, CSVDownload } from "react-csv";
 
 const Home = () => {
-    const [items, setItems] = useState([]);
+    let [items, setItems] = useState([]);
 
     const readExcel = (file) => {
         // setItems([])
@@ -30,8 +31,10 @@ const Home = () => {
         });
 
         promise.then((d) => {
-            d.forEach(item => {
+            d.forEach((item, index) => {
                 item.check = "Chưa kiểm tra"
+                if(typeof item.cmnd !== "undefined")
+                item.cmnd = item.cmnd.toString()
             });
             setItems(d);
 
@@ -39,16 +42,17 @@ const Home = () => {
         });
     };
     const check_tamo = () => {
-        for (let index = 0; index < items.length; index++) {
+        items.map((item, index) => {
 
-           
-            if(index===items.length-1) console.log("done")
+
+            if (index === items.length - 1) console.log("done")
 
             console.log(items.length)
-            console.log(items)
+            // console.log(items)
             // console.log(items[index].cmnd.length + "    " + items[index].cmnd + ",")
             if (items[index].cmnd.length !== 12 && items[index].cmnd.length !== 9) {
                 items[index].check = "CMND/CCCD Không hợp lệ"
+                console.log(item)
 
             }
             else
@@ -88,24 +92,55 @@ const Home = () => {
 
 
 
-        }
+        })
     }
     const ex_excel = items.map((item, index) => {
-        return (<tr key={item.check+index} >
+        return (<tr  >
             <th scope="row">{index + 1}</th>
             <td>{item.cmnd}</td>
-            <td >{item.check}</td>
+            <td key={item.check} >{item.check}</td>
         </tr>)
 
     })
     let refresh = () => {
-        let arr = { ...items }
+        // console.log(items)
+        let check = 0
+        let count = 0
+        items.forEach(item => {
+            if (item.check === "Chưa kiểm tra") {
+                check = 1
+            }
+            else {
+                if(item.cmnd.charAt(0)==='0')
+                item.cmnd="x"+item.cmnd
+                count = count + 1
+            }
+        });
+        if (check === 1) alert("Kiếm tra CMND chưa hoàn thành. Tiến độ: " + count + " / " + items.length)
+        else {
+            alert("Đã kiểm tra xong, nhấn Download file kết quả để tải về")
+        }
+        let arr = [...items]
         setItems(arr)
     }
+    let  headers = [
+        { label: "cmnd/cccd", key: "cmnd" },
+        { label: "Kết quả check", key: "check" }
+        // { label: "Email", key: "email" }
+      ];
     return (
         <div className="container">
             <div className="row">
-                <div className="col-12" style={{ height: "150px" }}> </div>
+                <div className="col-12" style={{ height: "50px" }}> </div>
+                <div className="col-12">
+                    Một số lưu ý khi sử dụng tools: <br></br>
+                    1/ Chọn choose File để chọn file excel chứa cmnd. Cột chứa số CMND/CCCD phải đặt tên là "cmnd". <br/>
+                    2/ File excel không quá 1000 dòng. <br/>
+                    3/ Nhấn nút check tamo để bắt đầu kiểm tra. <br/>
+                    4/ Nhấn nút xem tiến độ để xem đã check được bao nhiêu số cmnd. nếu hiện thông báo "Đã kiểm tra xong,..." thì có thể tải file excel về.
+
+                </div>
+                <div className="col-12" style={{ height: "50px" }}> </div>
                 <div className="col-3"></div>
                 <div className="col-6">
                     <div class="input-group mb-3">
@@ -121,11 +156,17 @@ const Home = () => {
                         />
 
                     </div>
-                    <button className="btn btn-primary" onClick={() => check_tamo()} >Check Tamo</button>
-                    <button className="btn btn-primary" onClick={() => refresh()} >Refresh</button>
 
                 </div>
                 <div className="col-12">
+                    <button className="btn btn-primary" onClick={() => check_tamo()} >1. Check Tamo</button>
+                    <button className="btn btn-light" onClick={() => refresh()} >2. Xem tiến độ</button>
+                    {/* <button className="btn btn-warning" onClick={() => refresh()} >Chỉ xuất chưa đăng ký</button> */}
+                    {/* <button className="btn btn-danger" onClick={() => refresh()} >Xuất tất cả</button> */}
+                    <CSVLink type="button"  className="btn btn-danger" data={items} headers={headers} filename="Check_Tamo.csv">
+                       3. Download file kết quả
+                    </CSVLink>
+
                     <table class="table">
                         <thead>
                             <tr>
