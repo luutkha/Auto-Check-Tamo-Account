@@ -35,6 +35,11 @@ const Home = () => {
                 item.check = "Chưa kiểm tra"
                 if(typeof item.cmnd !== "undefined")
                 item.cmnd = item.cmnd.toString()
+
+                var numb = item.cmnd.match(/\d/g);
+                numb = numb.join("");
+                item.cmnd= numb
+                item.constractNo="x"+ item.constractNo
             });
             setItems(d);
 
@@ -42,13 +47,15 @@ const Home = () => {
         });
     };
     const check_tamo = () => {
+        // console.log(items)
         items.map((item, index) => {
+
 
 
             if (index === items.length - 1) console.log("done")
 
             console.log(items.length)
-            // console.log(items)
+            //   console.log(items)
             // console.log(items[index].cmnd.length + "    " + items[index].cmnd + ",")
             if (items[index].cmnd.length !== 12 && items[index].cmnd.length !== 9) {
                 items[index].check = "CMND/CCCD Không hợp lệ"
@@ -60,35 +67,45 @@ const Home = () => {
                     "https://thawing-hamlet-25516.herokuapp.com/https://api.tamo.vn/web/public/client/check/identificationNumber/" + items[index].cmnd,
 
                     {
-                        headers: {
-                            Accept: "application/json, text/plain, */*",
-                            "Accept-Encoding": "gzip, deflate, br",
-                            "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
-                            Connection: "keep-alive",
-                            Host: "api.tamo.vn",
-                            Origin: "https://www.tamo.vn",
-                            Referer: "https://www.tamo.vn/",
-                            "sec-ch-ua": '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
-                            "sec-ch-ua-mobile": '?0',
-                            "sec-ch-ua-platform": '"Windows"',
-                            "Sect-fetch-Dest": "empty",
-                            "Sec-Fetch-Mode": "cors",
-                            "Sec-Fetch-Site": "same-site",
-                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
-                        },
+                        // headers: {
+                        //     Accept: "application/json, text/plain, */*",
+                        //     "Accept-Encoding": "gzip, deflate, br",
+                        //     "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+                        //     Connection: "keep-alive",
+                        //     Host: "api.tamo.vn",
+                        //     Origin: "https://www.tamo.vn",
+                        //     Referer: "https://www.tamo.vn/",
+                        //     "sec-ch-ua": '"Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93"',
+                        //     "sec-ch-ua-mobile": '?0',
+                        //     "sec-ch-ua-platform": '"Windows"',
+                        //     "Sect-fetch-Dest": "empty",
+                        //     "Sec-Fetch-Mode": "cors",
+                        //     "Sec-Fetch-Site": "same-site",
+                        //     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36",
+                        // },
                     }
                 )
-                    .then((res) => {
-                        if (!res.ok) {
-                            // make the promise be rejected if we didn't get a 2xx response
-                            items[index].check = "Chưa đăng ký"
-
-                        } else {
+                    .then((response) => {
+                        console.log(response)
+                        if (!response.ok) { 
+                            if (response.status === 404){ 
+                                items[index].check = "Chưa đăng ký"
+                                console.log("Phát hiện cmnd chưa đk")
+                                //    throw Error(response.statusText); 
+                             }
+                             if (response.status === 429){ 
+                                items[index].check = "Server block"
+                                console.log("Server block api")
+                                //    throw Error(response.statusText); 
+                             }
+                            return ; // will print '200 - ok'
+                      } else {
                             // go the desired response
                             items[index].check = "Đã đăng ký"
                         }
                         // return res.json();
                     })
+                   
 
 
 
@@ -125,8 +142,10 @@ const Home = () => {
     }
     let  headers = [
         { label: "cmnd/cccd", key: "cmnd" },
-        { label: "Kết quả check", key: "check" }
-        // { label: "Email", key: "email" }
+        { label: "Kết quả check", key: "check" },
+        { label: "constractNo", key: "constractNo" },
+        { label: "gender", key: "gender" }
+
       ];
     return (
         <div className="container">
