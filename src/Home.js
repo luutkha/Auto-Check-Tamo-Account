@@ -144,6 +144,7 @@ const Home = () => {
         { label: "cmnd/cccd", key: "cmnd" },
         { label: "Kết quả check", key: "check" },
         { label: "constractNo", key: "constractNo" },
+        { label: "name", key: "name" },
         { label: "gender", key: "gender" }
 
       ];
@@ -153,8 +154,8 @@ const Home = () => {
                 <div className="col-12" style={{ height: "50px" }}> </div>
                 <div className="col-12">
                     Một số lưu ý khi sử dụng tools: <br></br>
-                    1/ Chọn choose File để chọn file excel chứa cmnd. Cột chứa số CMND/CCCD phải đặt tên là "cmnd". <br/>
-                    2/ File excel không quá 1000 dòng. <br/>
+                    1/ Chọn choose File để chọn file excel chứa cmnd. Cột chứa số CMND/CCCD phải đặt tên là "cmnd". Cột chứa tên ảnh CMND/CCCD phải đặt tên ảnh cmnd là "constractNo". Cột chứa tên người phải đặt tên là "name" <br/>
+                    2/ File excel không quá 250 dòng. <br/>
                     3/ Nhấn nút check tamo để bắt đầu kiểm tra. <br/>
                     4/ Nhấn nút xem tiến độ để xem đã check được bao nhiêu số cmnd. nếu hiện thông báo "Đã kiểm tra xong,..." thì có thể tải file excel về.
 
